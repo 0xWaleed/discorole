@@ -1,0 +1,24 @@
+{
+  "name": "0xwaleed/discorole",
+  "description": "Check user's roles and permissions",
+  "type": "library",
+  "require": {
+    "guzzlehttp/guzzle": "^7.3.0"
+  },
+  "require-dev": {
+    "pestphp/pest": "^1.20",
+    "pestphp/pest-plugin-mock": "^1.0"
+  },
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "DiscoRole\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "0xWaleed",
+      "email": "imwaleed@outlook.sa"
+    }
+  ]
+}
