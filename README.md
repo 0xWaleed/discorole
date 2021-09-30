@@ -6,7 +6,7 @@ Sometimes I build an application and want to synchronize the user with his roles
 
 ## Requiremensts
 * PHP 8 <3
-* Bot token and should be in your server
+* Bot token and the bot should be in your server
 
 ## Install
 
