@@ -42,3 +42,29 @@ test('DiscoRole->getGuild', function ()
     expect($guild)->toBeInstanceOf(\DiscoRole\Guild::class);
     expect($guild->id)->toEqual($guildId);
 });
+
+it('should not invoke the http request when cache already exist', function ()
+{
+    $fakeCache = $this->getMockBuilder(\Psr\SimpleCache\CacheInterface::class)->getMock();
+    $this->mockQueue->append($this->response);
+
+    $fakeCache->expects($this->once())->method('has')->with('discorole.guild.123456789')->willReturn(true);
+    $fakeCache->expects($this->once())->method('get')->with('discorole.guild.123456789')->willReturn(new stdClass());
+    $guild = (new DiscoRole(client: $this->client, token: '667788', cache: $fakeCache))->getGuild('123456789');
+
+    expect($guild)->toBeInstanceOf(\DiscoRole\Guild::class);
+    expect($this->mockQueue->count())->toBe(1);
+});
+
+it('should set the cache when is not exist', function ()
+{
+    $fakeCache = $this->getMockBuilder(\Psr\SimpleCache\CacheInterface::class)->getMock();
+    $this->mockQueue->append($this->response);
+
+    $fakeCache->expects($this->once())->method('has')->with('discorole.guild.123456789')->willReturn(false);
+    $fakeCache->expects($this->once())->method('set')->with('discorole.guild.123456789', \PHPUnit\Framework\anything());
+
+    (new DiscoRole(client: $this->client, token: '667788', cache: $fakeCache))->getGuild('123456789');
+
+    expect($this->mockQueue->count())->toBe(0);
+});
