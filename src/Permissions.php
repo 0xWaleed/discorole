@@ -2,16 +2,16 @@
 
 namespace DiscoRole;
 
+use JsonSerializable;
+
 /**
  * @method boolean canAdministrate()
  * @method boolean canManage()
  * @method boolean canKick()
  * @method boolean canBan()
  */
-class Permissions implements \JsonSerializable
+class Permissions implements JsonSerializable
 {
-
-
     public function __construct(public int $permissions)
     {
     }
@@ -41,11 +41,15 @@ class Permissions implements \JsonSerializable
         return ($this->permissions & $permission) === $permission;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
+        $constants = (new \ReflectionClass(PermissionConstants::class))->getConstants();
         $out = [];
-        foreach (PermissionConstants::PERMISSION_LABELS as $permission => $label) {
-            $out["can{$label}"] = $this->has($permission);
+        foreach ($constants as $key => $value) {
+            if (gettype($value) !== "integer") {
+                continue;
+            }
+            $out[$key] = $this->has($value);
         }
         return $out;
     }

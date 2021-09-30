@@ -49,13 +49,9 @@ test('perm', function ()
     expect((new Permissions(-1))->permissions)->toEqual(-1);
 });
 
-test('json serialization', function ()
+test('json serialization with permission original name if label not exist', function ()
 {
     $decodedJson = json_decode(json_encode(new Permissions(-1)), true);
-    expect($decodedJson)->toEqual([
-        'canKick'         => true,
-        'canBan'          => true,
-        'canManage'       => true,
-        'canAdministrate' => true,
-    ]);
+    expect($decodedJson['CREATE_INSTANT_INVITE'])->toEqual(true);
+    expect($decodedJson['STREAM'])->toEqual(true);
 });
