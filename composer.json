@@ -2,9 +2,8 @@
   "name": "0xwaleed/discorole",
   "description": "Check user's roles and permissions",
   "type": "library",
-  "version": "0.0.1",
   "require": {
-    "php": "8.0",
+    "php": "^8.0",
     "guzzlehttp/guzzle": "^7.3.0"
   },
   "require-dev": {
