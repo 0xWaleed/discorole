@@ -1,4 +1,4 @@
-name: PHP Composer
+name: PHP-CI
 
 on:
   push:
@@ -21,7 +21,7 @@ jobs:
 
       - name: Update composer packages
         run: composer update
-        
+
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
 
