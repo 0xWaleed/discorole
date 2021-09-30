@@ -24,6 +24,10 @@
 |
 */
 
+use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Handler\MockHandler;
+
 expect()->extend('toBeOne', function ()
 {
     return $this->toBe(1);
@@ -44,3 +48,19 @@ function something()
 {
     // ..
 }
+
+//
+//beforeEach(function ()
+//{
+//    $mock = new MockHandler();
+//    $this->mock = $mock;
+//    $handlerStack = HandlerStack::create($mock);
+//    $this->client = new Client(['handler' => $handlerStack]);
+//});
+
+uses()->beforeEach(function() {
+    $mock = new MockHandler();
+    $this->mockQueue = $mock;
+    $handlerStack = HandlerStack::create($mock);
+    $this->client = new Client(['handler' => $handlerStack]);
+})->in(__DIR__);
