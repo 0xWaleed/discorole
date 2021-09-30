@@ -38,6 +38,11 @@ class Permissions implements JsonSerializable
         if (is_string($permission)) {
             $permission = constant(PermissionConstants::class . '::' . $permission);
         }
+
+        if (($this->permissions & PermissionConstants::ADMINISTRATOR) === PermissionConstants::ADMINISTRATOR) {
+            return true;
+        }
+
         return ($this->permissions & $permission) === $permission;
     }
 

@@ -1,6 +1,7 @@
 <?php
 
 use DiscoRole\Permissions;
+use DiscoRole\PermissionConstants;
 
 test('canAdministrate', function ()
 {
@@ -44,7 +45,14 @@ test('::has with permission name', function ()
     expect((new Permissions($bitmask ^ $bitmask))->has('MANAGE_GUILD'))->toBeFalse();
 });
 
-test('perm', function ()
+test('::has will return true when permission has administrator', function ()
+{
+    $permissions = new Permissions(PermissionConstants::ADMINISTRATOR);
+    expect($permissions->has((-1)))->toBeTrue();
+});
+
+
+test('->permissions to return the original int value', function ()
 {
     expect((new Permissions(-1))->permissions)->toEqual(-1);
 });
