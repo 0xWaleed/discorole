@@ -1,3 +1,4 @@
+[![TEST](https://github.com/0xWaleed/discorole/actions/workflows/php.yml/badge.svg)](https://github.com/0xWaleed/discorole/actions/workflows/php.yml)  
 # DiscoRole
 Simple PHP library to get all user's rols and permissions from the specified guild.
 
