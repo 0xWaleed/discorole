@@ -4,6 +4,7 @@ namespace DiscoRole;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
+use Psr\SimpleCache\CacheInterface;
 use Psr\Http\Client\ClientInterface;
 use DiscoRole\Exceptions\DiscordApiException;
 
@@ -21,7 +22,12 @@ class Guild
      */
     public array $roles = [];
 
-    public function __construct(public object $guild, public $token, public ?ClientInterface $client = null)
+    public function __construct(
+        public object           $guild,
+        public                  $token,
+        public ?ClientInterface $client = null,
+        public ?CacheInterface  $cache = null
+    )
     {
         if (isset($guild->roles)) {
             $this->mapRoles($guild);
@@ -37,6 +43,10 @@ class Guild
 
     public function getMember(string $memberId): Member
     {
+        $key = $this->getCacheKey($memberId);
+        if ($this->cache?->has($key)) {
+            return new Member(member: $this->cache?->get($key), guild: $this);
+        }
         $response = $this->client()->sendRequest(new Request('GET', sprintf('%s/guilds/%s/members/%s', DiscoRole::DISCORD_API, $this->guild->id, $memberId), [
             'Authorization' => 'Bot ' . $this->token
         ]));
@@ -44,6 +54,7 @@ class Guild
             throw new DiscordApiException(json_decode((string) $response->getBody())->message ?? 'Unknown error.');
         }
         $memberObject = json_decode((string) $response->getBody());
+        $this->cache?->set($key, $memberObject);
         if (! $memberObject) {
             throw new DiscordApiException('Cannot decode member object.');
         }
@@ -60,5 +71,10 @@ class Guild
         foreach ($guild->roles as $role) {
             $this->roles[$role->id] = new Role($role);
         }
+    }
+
+    private function getCacheKey(string $memberId): string
+    {
+        return "discorole.guild.{$this->guild->id}.member.$memberId";
     }
 }

@@ -5,6 +5,7 @@ use DiscoRole\Guild;
 use DiscoRole\Member;
 use GuzzleHttp\Psr7\Utils;
 use GuzzleHttp\Psr7\Response;
+use Psr\SimpleCache\CacheInterface;
 use Psr\Http\Client\ClientInterface;
 use DiscoRole\Exceptions\DiscordApiException;
 
@@ -226,3 +227,29 @@ test('->getMember should throw when json_decode returns null', function ()
     $o = new Guild($this->guildFixture, token: '1234', client: $this->client);
     $o->getMember('12345');
 })->throws(DiscordApiException::class);
+
+it('should not invoke the request when the member of the same guild exist in cache', function ()
+{
+    $fakeCache = $this->getMockBuilder(CacheInterface::class)->getMock();
+    $cacheKey = "discorole.guild.{$this->guildFixture->id}.member.12345";
+
+    $fakeCache->expects($this->once())->method('has')->with($cacheKey)->willReturn(true);
+    $fakeCache->expects($this->once())->method('get')->with($cacheKey)->willReturn(new stdClass());
+    $this->mockQueue->append($this->response);
+    $o = new Guild($this->guildFixture, token: '1234', client: $this->client, cache: $fakeCache);
+    $member = $o->getMember('12345');
+    expect($member)->toBeInstanceOf(Member::class);
+    expect($this->mockQueue->count())->toBe(1);
+});
+
+it('should set the value in cache after receiving the api response', function ()
+{
+    $fakeCache = $this->getMockBuilder(CacheInterface::class)->getMock();
+    $cacheKey = "discorole.guild.{$this->guildFixture->id}.member.12345";
+
+    $fakeCache->expects($this->once())->method('has')->with($cacheKey)->willReturn(false);
+    $fakeCache->expects($this->once())->method('set')->with($cacheKey, \PHPUnit\Framework\anything());
+    $this->mockQueue->append($this->response);
+    $o = new Guild($this->guildFixture, token: '1234', client: $this->client, cache: $fakeCache);
+    $o->getMember('12345');
+});
