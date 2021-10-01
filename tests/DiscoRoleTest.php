@@ -34,13 +34,23 @@ test('DiscoRole should throw when api returns non 200 status code without messag
     (new DiscoRole(client: $this->client, token: '123'))->getGuild('123456789');
 })->throws(DiscordAPIException::class, 'Unknown error');
 
-test('DiscoRole->getGuild', function ()
+test('DiscoRole->getGuild return Guild instance', function ()
 {
     $guildId = '123456789';
     $this->mockQueue->append(fn() => $this->response->withBody(Utils::streamFor(json_encode(['id' => $guildId]))));
     $guild = (new DiscoRole(client: $this->client, token: '123'))->getGuild($guildId);
     expect($guild)->toBeInstanceOf(\DiscoRole\Guild::class);
     expect($guild->id)->toEqual($guildId);
+});
+
+test('DiscoRole->getGuild pass client and cache when creating instance of Guild', function ()
+{
+    $fakeCache = $this->getMockBuilder(\Psr\SimpleCache\CacheInterface::class)->getMock();
+    $this->mockQueue->append(fn() => $this->response);
+    $guild = (new DiscoRole(client: $this->client, token: '123', cache: $fakeCache))->getGuild('1234');
+    expect($guild)->toBeInstanceOf(\DiscoRole\Guild::class);
+    expect($guild->cache)->toBe($fakeCache);
+    expect($guild->client)->toBe($this->client);
 });
 
 it('should not invoke the http request when cache already exist', function ()
@@ -53,6 +63,21 @@ it('should not invoke the http request when cache already exist', function ()
     $guild = (new DiscoRole(client: $this->client, token: '667788', cache: $fakeCache))->getGuild('123456789');
 
     expect($guild)->toBeInstanceOf(\DiscoRole\Guild::class);
+    expect($this->mockQueue->count())->toBe(1);
+});
+
+it('should pass the cache and client to Guild constructor when getting cached value', function ()
+{
+    $fakeCache = $this->getMockBuilder(\Psr\SimpleCache\CacheInterface::class)->getMock();
+    $this->mockQueue->append($this->response);
+
+    $fakeCache->expects($this->once())->method('has')->with('discorole.guild.123456789')->willReturn(true);
+    $fakeCache->expects($this->once())->method('get')->with('discorole.guild.123456789')->willReturn(new stdClass());
+    $guild = (new DiscoRole(client: $this->client, token: '667788', cache: $fakeCache))->getGuild('123456789');
+
+    expect($guild)->toBeInstanceOf(\DiscoRole\Guild::class);
+    expect($guild->cache)->toBe($fakeCache);
+    expect($guild->client)->toBe($this->client);
     expect($this->mockQueue->count())->toBe(1);
 });
 

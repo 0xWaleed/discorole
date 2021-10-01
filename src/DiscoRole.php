@@ -13,7 +13,11 @@ class DiscoRole
 {
     const DISCORD_API = 'https://discord.com/api/v9';
 
-    public function __construct(public string $token, public ?ClientInterface $client = null, public ?CacheInterface $cache = null)
+    public function __construct(
+        public string           $token,
+        public ?ClientInterface $client = null,
+        public ?CacheInterface  $cache = null
+    )
     {
         $this->client = $client ?? new Client();
     }
@@ -26,9 +30,14 @@ class DiscoRole
      */
     public function getGuild($guildId): Guild
     {
-        $key = "discorole.guild.$guildId";
+        $key = $this->getCacheKey($guildId);
         if ($this->cache?->has($key)) {
-            return new Guild(guild: $this->cache->get($key), token: $this->token);
+            return new Guild(
+                guild: $this->cache->get($key),
+                token: $this->token,
+                client: $this->client,
+                cache: $this->cache
+            );
         }
         $request = new Request('GET', sprintf('%s/guilds/%s', self::DISCORD_API, $guildId), [
             'Authorization' => 'Bot ' . $this->token
@@ -39,6 +48,16 @@ class DiscoRole
         }
         $guild = json_decode($response->getBody()->getContents());
         $this->cache?->set($key, $guild);
-        return new Guild(guild: $guild, token: $this->token, client: $this->client);
+        return new Guild(
+            guild: $guild,
+            token: $this->token,
+            client: $this->client,
+            cache: $this->cache
+        );
+    }
+
+    private function getCacheKey($guildId): string
+    {
+        return "discorole.guild.$guildId";
     }
 }
