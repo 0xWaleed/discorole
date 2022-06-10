@@ -4,7 +4,7 @@
   "type": "library",
   "require": {
     "php": "^8.0",
-    "guzzlehttp/guzzle": "^7.3.0",
+    "guzzlehttp/guzzle": "^7.4.0",
     "psr/simple-cache": "^1.0"
   },
   "require-dev": {
@@ -22,5 +22,10 @@
       "name": "0xWaleed",
       "email": "imwaleed@outlook.sa"
     }
-  ]
+  ],
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": false
+    }
+  }
 }
