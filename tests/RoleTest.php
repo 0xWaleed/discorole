@@ -44,13 +44,13 @@ test('->permission to be instance of Permission even when role has no permission
 test('->accessors', function ()
 {
     $o = new Role($this->roleFixture);
-    expect($o->id)->toBe($this->roleFixture->id);
-    expect($o->name)->toBe($this->roleFixture->name);
-    expect($o->color)->toBe($this->roleFixture->color);
-    expect($o->hoist)->toBe($this->roleFixture->hoist);
-    expect($o->position)->toBe($this->roleFixture->position);
-    expect($o->managed)->toBe($this->roleFixture->managed);
-    expect($o->mentionable)->toBe($this->roleFixture->mentionable);
+    expect($o->id)->toBe($this->roleFixture->id)
+        ->and($o->name)->toBe($this->roleFixture->name)
+        ->and($o->color)->toBe($this->roleFixture->color)
+        ->and($o->hoist)->toBe($this->roleFixture->hoist)
+        ->and($o->position)->toBe($this->roleFixture->position)
+        ->and($o->managed)->toBe($this->roleFixture->managed)
+        ->and($o->mentionable)->toBe($this->roleFixture->mentionable);
 });
 
 test('->hasColor to return false when number is 0', function ()
@@ -68,8 +68,8 @@ test('->__call will fallback to permissions', function ()
 {
     $this->roleFixture->permissions = PermissionConstants::KICK_MEMBERS | PermissionConstants::BAN_MEMBERS | PermissionConstants::MANAGE_GUILD;
     $o = new Role($this->roleFixture);
-    expect($o->canManage())->toBeTrue();
-    expect($o->canBan())->toBeTrue();
-    expect($o->canKick())->toBeTrue();
+    expect($o->canManage())->toBeTrue()
+        ->and($o->canBan())->toBeTrue()
+        ->and($o->canKick())->toBeTrue();
 });
 

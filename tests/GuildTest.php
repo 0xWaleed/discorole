@@ -133,8 +133,8 @@ T
 test('->roles to be instance of Role[]', function ()
 {
     $o = new Guild($this->guildFixture, token: '1234',);
-    expect($o->roles)->toBeArray();
-    expect($o->roles[$this->guildFixture->roles[0]->id])->toBeInstanceOf(Role::class);
+    expect($o->roles)->toBeArray()
+        ->and($o->roles[$this->guildFixture->roles[0]->id])->toBeInstanceOf(Role::class);
 });
 
 test('->roles to be empty when guild has no roles or null', function ()
@@ -147,11 +147,11 @@ test('->roles to be empty when guild has no roles or null', function ()
 test('->accessors to fallback to $guild object', function ()
 {
     $o = new Guild($this->guildFixture, token: '1234',);
-    expect($o->id)->toBe($this->guildFixture->id);
-    expect($o->name)->toBe($this->guildFixture->name);
-    expect($o->icon)->toBe($this->guildFixture->icon);
-    expect($o->description)->toBe($this->guildFixture->description);
-    expect($o->owner_id)->toBe($this->guildFixture->owner_id);
+    expect($o->id)->toBe($this->guildFixture->id)
+        ->and($o->name)->toBe($this->guildFixture->name)
+        ->and($o->icon)->toBe($this->guildFixture->icon)
+        ->and($o->description)->toBe($this->guildFixture->description)
+        ->and($o->owner_id)->toBe($this->guildFixture->owner_id);
 });
 
 test('can inject ClientInterface via constructor', function ()
@@ -167,8 +167,8 @@ test('->getMember makes GET request to the correct endpoint', function ()
     $this->mockQueue->append($this->response);
     $o = new Guild($this->guildFixture, token: '1234', client: $this->client);
     $o->getMember('12345');
-    expect($this->mockQueue->getLastRequest()->getMethod())->toEqual('GET');
-    expect((string) $this->mockQueue->getLastRequest()->getUri())->toEqual('https://discord.com/api/v9/guilds/123456/members/12345');
+    expect($this->mockQueue->getLastRequest()->getMethod())->toEqual('GET')
+        ->and((string)$this->mockQueue->getLastRequest()->getUri())->toEqual('https://discord.com/api/v9/guilds/123456/members/12345');
 });
 
 test('->getMember makes GET request with the token', function ()
@@ -215,8 +215,8 @@ test('->getMember to return instance of Member', function ()
     $this->mockQueue->append($response);
     $o = new Guild($this->guildFixture, token: '1234', client: $this->client);
     $member = $o->getMember('12345');
-    expect($member)->toBeInstanceOf(Member::class);
-    expect($member->user->id)->toEqual('12345');
+    expect($member)->toBeInstanceOf(Member::class)
+        ->and($member->user->id)->toEqual('12345');
 });
 
 test('->getMember should throw when json_decode returns null', function ()
@@ -238,8 +238,8 @@ it('should not invoke the request when the member of the same guild exist in cac
     $this->mockQueue->append($this->response);
     $o = new Guild($this->guildFixture, token: '1234', client: $this->client, cache: $fakeCache);
     $member = $o->getMember('12345');
-    expect($member)->toBeInstanceOf(Member::class);
-    expect($this->mockQueue->count())->toBe(1);
+    expect($member)->toBeInstanceOf(Member::class)
+        ->and($this->mockQueue->count())->toBe(1);
 });
 
 it('should set the value in cache after receiving the api response', function ()

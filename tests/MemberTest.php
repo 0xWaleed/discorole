@@ -54,8 +54,8 @@ test('member has a parent of guild', function ()
 test('member has roles', function ()
 {
     $o = new Member(member: $this->memberFixture, guild: $this->guild);
-    expect($o->roles)->toBeArray();
-    expect($o->roles[836614519756554240])->toBe($this->roles[0]);
+    expect($o->roles)->toBeArray()
+        ->and($o->roles[836614519756554240])->toBe($this->roles[0]);
 });
 
 test('Member not to throw when guild->roles is less than member->roles', function ()
@@ -75,8 +75,8 @@ test('Member roles to be empty when member roles is null', function ()
 test('accessors to fallback to member object', function ()
 {
     $o = new Member(member: $this->memberFixture, guild: $this->guild);
-    expect($o->joined_at)->toBe($this->memberFixture->joined_at);
-    expect($o->user)->toBe($this->memberFixture->user);
+    expect($o->joined_at)->toBe($this->memberFixture->joined_at)
+        ->and($o->user)->toBe($this->memberFixture->user);
 });
 
 test('->has will return true when one of roles has the permission', function ()
